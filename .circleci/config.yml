@@ -6,7 +6,7 @@ jobs:
     environment:
       MANIFEST_BRANCH: 'android-9.0'
       # PBRP_BRANCH: ''
-      VERSION: '2.9.1'
+      VERSION: '3.0.0'
       MAINTAINER: "@I\_am\_pronoob" # Underscores must be escaped
       VENDOR: 'oppo'
       CODENAME: 'CPH1861'
@@ -16,7 +16,7 @@ jobs:
       # EXTRA_CMD: ""
       # PB_ENGLISH: 'true'
       CHANGELOG: |
-        - Initial Build Based On Pie Source
+        - Source Upstream to 3.0
         - What works?!
           - Everything
         - What's broken?!
