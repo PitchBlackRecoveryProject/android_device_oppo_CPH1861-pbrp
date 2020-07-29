@@ -46,7 +46,6 @@ on init
     start hwservicemanager
     start servicemanager
     start vendor.keymaster-3-0
-    setprop crypto.ready 1
 
 service hwservicemanager /sbin/hwservicemanager
     user root
@@ -66,21 +65,6 @@ service vendor.keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
     group root drmrpc
     disabled
     seclabel u:r:recovery:s0
-
-on property:crypto.ready=0
-    stop vendor.keymaster-3-0
-    stop servicemanager
-
-on property:vendor.sys.listeners.registered=true
-    start vendor.keymaster-3-0
-    start servicemanager
-
-on property:recovery.reload.persist=trigger_reload_persist
-    load_persist_props
-
-on property:recovery.fde.service=trigger_restart_service
-    restart hwservicemanager
-    restart vendor.keymaster-3-0
 
 on property:ro.mtk_emmc_support=1
     # Support A/B feature for emmc boot region
