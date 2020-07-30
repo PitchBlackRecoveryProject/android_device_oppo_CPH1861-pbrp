@@ -28,12 +28,16 @@
 on fs
     # Somehow AOSP build system hasn't provided a symlink here
     symlink /system_root/system /system
+    symlink /system/etc /etc
     # Create a more standard /dev/block layout for our scripts
     symlink /dev/block/platform/bootdevice/by-name /dev/block/by-name
     setprop sys.usb.ffs.aio_compat 1
 
     write /sys/devices/platform/odm/odm:oppo_charger/power_supply/usb/otg_switch 1
     export ANDROID_ROOT /system_root
+
+    mkdir /data/app/mcRegistry 0770 system system
+    mkdir /data/app/mcRegistry/TbStorage 0770 system system
 
 on init
 
@@ -43,27 +47,53 @@ on init
     symlink /sbin/keystore.mt6771.so /vendor/lib64/hw/keystore.mt6771.so
     symlink /sbin/mcRegistry /vendor/app/mcRegistry
 
+    start vendor.keymaster-3-0
     start hwservicemanager
-    start servicemanager
-    start keymaster-3-0
+
+on property:recovery.reload.persist=trigger_reload_persist
+    load_persist_props
+
+on property:enable.fbe.service=0
+    stop hal_cryptoeng_oppo
+    stop mobicore
 
 service hwservicemanager /sbin/hwservicemanager
-    user root
-    group root
     disabled
     onrestart setprop hwservicemanager.ready false
+    writepid /dev/cpuset/system-background/tasks
     seclabel u:r:recovery:s0
+
+service vendor.keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
+    class early_hal
+    user system
+    group system drmrpc
+    seclabel u:r:recovery:s0
+
+on property:recovery.fde.service=trigger_restart_service
+    restart hwservicemanager
+    restart keymaster-3-0
 
 service servicemanager /sbin/servicemanager
-    user root
-    group root readproc
-    disabled
+    class core animation
+    user system
+    group system readproc
+    critical
+    onrestart restart healthd
+    onrestart restart zygote
+    onrestart restart audioserver
+    onrestart restart media
+    onrestart restart surfaceflinger
+    onrestart restart inputflinger
+    onrestart restart drm
+    onrestart restart cameraserver
+    onrestart restart keystore
+    onrestart restart gatekeeperd
+    writepid /dev/cpuset/system-background/tasks
+    shutdown critical
     seclabel u:r:recovery:s0
 
-service keymaster-3-0 /sbin/android.hardware.keymaster@3.0-service
-    user root
-    group root
-    disabled
+service vndservicemanager /vendor/bin/vndservicemanager /dev/vndbinder
+    writepid /dev/cpuset/system-background/tasks
     seclabel u:r:recovery:s0
 
 on property:ro.mtk_emmc_support=1
