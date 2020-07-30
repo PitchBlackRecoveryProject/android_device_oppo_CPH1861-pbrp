@@ -41,7 +41,6 @@ on init
     mkdir /vendor/lib64 0700 root root
     mkdir /vendor/lib64/hw 0700 root root
     symlink /vendor/manifest.xml /system_root/system/manifest.xml
-    symlink /sbin/mcRegistry /vendor/app/mcRegistry
 
     start hwservicemanager
     setprop crypto.ready 1
