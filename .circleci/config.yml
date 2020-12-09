@@ -16,7 +16,7 @@ jobs:
       # EXTRA_CMD: ""
       # PB_ENGLISH: 'true'
       CHANGELOG: |
-        - Source Upstream to 3.0
+        - Updated some blobs from c.49
         - What works?!
           - Everything
         - What's broken?!
